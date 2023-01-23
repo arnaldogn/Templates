@@ -38,7 +38,7 @@ open class Fetcher {
             .eraseToAnyPublisher()
     }
     
-    public func decode<T: Decodable>(_ data: Data) -> ResponsePublisher<T> {
+    open func decode<T: Decodable>(_ data: Data) -> ResponsePublisher<T> {
         return Just(data)
             .decode(type: T.self, decoder: JSONDecoder())
             .mapError { _ in .decoding }
