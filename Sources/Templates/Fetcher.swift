@@ -34,14 +34,15 @@ open class Fetcher {
         }
         return session.dataTaskPublisher(for: URLRequest(url: url))
             .mapError { _ in .badRequest() }
-            .flatMap(maxPublishers: .max(1)) { pair in decode(pair.data) }
+            .flatMap(maxPublishers: .max(1)) { pair in self.decode(pair.data) }
+            .eraseToAnyPublisher()
+    }
+    
+    public func decode<T: Decodable>(_ data: Data) -> ResponsePublisher<T> {
+        return Just(data)
+            .decode(type: T.self, decoder: JSONDecoder())
+            .mapError { _ in .decoding }
             .eraseToAnyPublisher()
     }
 }
 
-func decode<T: Decodable>(_ data: Data) -> ResponsePublisher<T> {
-    return Just(data)
-        .decode(type: T.self, decoder: JSONDecoder())
-        .mapError { _ in .decoding }
-        .eraseToAnyPublisher()
-}
